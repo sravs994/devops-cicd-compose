@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh '''
                     export IMAGE_TAG=${IMAGE_TAG}
-                    docker-compose down || true
+                    docker-compose down --remove-orphans || true
                     docker-compose up -d
                 '''
             }
