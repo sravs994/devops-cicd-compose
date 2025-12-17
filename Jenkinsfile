@@ -30,14 +30,24 @@ pipeline {
             }
         }
 
+        stage('Deploy with Docker Compose') {
+            steps {
+                sh '''
+                    export IMAGE_TAG=${IMAGE_TAG}
+                    docker-compose down || true
+                    docker-compose up -d
+                '''
+            }
+        }
+
     }
 
     post {
         success {
-            echo "Docker image built successfully: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Application deployed successfully using Docker Compose"
         }
         failure {
-            echo "Docker build failed"
+            echo "Deployment failed"
         }
         always {
             echo "Pipeline completed"
