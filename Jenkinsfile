@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "flask-app"
+        IMAGE_TAG  = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -13,20 +18,29 @@ pipeline {
             steps {
                 echo "Branch: ${env.BRANCH_NAME}"
                 echo "Build Number: ${env.BUILD_NUMBER}"
+                echo "Docker Image: ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
-        stage('Unit Tests') {
+        stage('Build Docker Image') {
             steps {
-                echo "Running unit tests (placeholder)"
+                sh '''
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                '''
             }
         }
 
     }
 
     post {
+        success {
+            echo "Docker image built successfully: ${IMAGE_NAME}:${IMAGE_TAG}"
+        }
+        failure {
+            echo "Docker build failed"
+        }
         always {
-            echo "Pipeline finished for ${env.BRANCH_NAME}"
+            echo "Pipeline completed"
         }
     }
 }
